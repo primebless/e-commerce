@@ -1,0 +1,33 @@
+/* Base styles plus subtle animations for modern UX feel. */
+:root {
+  --page-gradient: radial-gradient(circle at top left, rgba(13, 148, 136, 0.16), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(234, 88, 12, 0.12), transparent 30%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-image: var(--page-gradient);
+}
+
+img {
+  max-width: 100%;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#root {
+  animation: fadeInUp 350ms ease;
+}
