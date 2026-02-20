@@ -15,7 +15,27 @@ import { errorHandler, notFound } from './middleware/error.js';
 
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
+const normalizeOrigin = (value) => String(value || '').trim().replace(/\/$/, '');
+const configuredOrigins = String(process.env.CLIENT_URLS || process.env.CLIENT_URL || '')
+  .split(',')
+  .map(normalizeOrigin)
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+
+      const cleanOrigin = normalizeOrigin(origin);
+      if (configuredOrigins.includes(cleanOrigin)) return callback(null, true);
+
+      // Allow active Vercel deployment URLs during rollout.
+      if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(cleanOrigin)) return callback(null, true);
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+  })
+);
 app.use(express.json());
 app.use(morgan('dev'));
 
