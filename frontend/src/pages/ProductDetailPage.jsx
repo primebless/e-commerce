@@ -25,6 +25,7 @@ const ProductDetailPage = () => {
   const [notice, setNotice] = useState('');
   const [openGallery, setOpenGallery] = useState(false);
   const [zoom, setZoom] = useState(1);
+  const fallbackImage = '/prime-favicon.svg';
 
   useEffect(() => {
     dispatch(fetchProductDetail(id));
@@ -86,10 +87,13 @@ const ProductDetailPage = () => {
           <Paper sx={{ p: 2 }}>
             <Box sx={{ position: 'relative' }}>
               <img
-                src={images[imageIndex]}
+                src={images[imageIndex] || fallbackImage}
                 alt={product.name}
                 style={{ width: '100%', borderRadius: 12, maxHeight: 460, objectFit: 'cover', cursor: 'zoom-in' }}
                 loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.src = fallbackImage;
+                }}
                 onClick={openGalleryView}
               />
               {images.length > 1 && (
@@ -131,7 +135,15 @@ const ProductDetailPage = () => {
                       transition: 'all 0.2s ease',
                     }}
                   >
-                    <Box component="img" src={img} alt={`${product.name} ${idx + 1}`} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <Box
+                      component="img"
+                      src={img || fallbackImage}
+                      alt={`${product.name} ${idx + 1}`}
+                      onError={(e) => {
+                        e.currentTarget.src = fallbackImage;
+                      }}
+                      sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   </Box>
                 ))}
               </Stack>
@@ -220,8 +232,11 @@ const ProductDetailPage = () => {
           )}
           <Box
             component="img"
-            src={images[imageIndex]}
+            src={images[imageIndex] || fallbackImage}
             alt={product.name}
+            onError={(e) => {
+              e.currentTarget.src = fallbackImage;
+            }}
             sx={{
               width: '100%',
               maxHeight: 560,
@@ -258,7 +273,15 @@ const ProductDetailPage = () => {
                   cursor: 'pointer',
                 }}
               >
-                <Box component="img" src={img} alt={`${product.name} preview ${idx + 1}`} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Box
+                  component="img"
+                  src={img || fallbackImage}
+                  alt={`${product.name} preview ${idx + 1}`}
+                  onError={(e) => {
+                    e.currentTarget.src = fallbackImage;
+                  }}
+                  sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
               </Box>
             ))}
           </Stack>

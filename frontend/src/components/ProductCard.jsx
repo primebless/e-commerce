@@ -7,6 +7,7 @@ import { formatKES } from '../utils/currency';
 // Responsive product card reused across list and home sections.
 const ProductCard = ({ product }) => {
   const [openPreview, setOpenPreview] = useState(false);
+  const fallbackImage = '/prime-favicon.svg';
 
   return (
     <>
@@ -30,9 +31,12 @@ const ProductCard = ({ product }) => {
       >
         <CardMedia
           component="img"
-          image={product.images?.[0]}
+          image={product.images?.[0] || fallbackImage}
           alt={product.name}
           loading="lazy"
+          onError={(e) => {
+            e.currentTarget.src = fallbackImage;
+          }}
           onDoubleClick={() => setOpenPreview(true)}
           sx={{ aspectRatio: '4 / 3', objectFit: 'cover', cursor: 'zoom-in' }}
         />
@@ -71,8 +75,11 @@ const ProductCard = ({ product }) => {
         <Box sx={{ px: 2, pb: 2 }}>
           <Box
             component="img"
-            src={product.images?.[0]}
+            src={product.images?.[0] || fallbackImage}
             alt={product.name}
+            onError={(e) => {
+              e.currentTarget.src = fallbackImage;
+            }}
             sx={{ width: '100%', maxHeight: '75vh', objectFit: 'contain' }}
           />
         </Box>
