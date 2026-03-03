@@ -1,21 +1,20 @@
-import { expect } from 'chai';
+import test from 'node:test';
+import assert from 'node:assert/strict';
 import request from 'supertest';
 import app from '../app.js';
 
-describe('Auth and Protected Routes', () => {
-  it('returns health status', async () => {
-    const res = await request(app).get('/api/health');
-    expect(res.status).to.equal(200);
-    expect(res.body.ok).to.equal(true);
-  });
+test('returns health status', async () => {
+  const res = await request(app).get('/api/health');
+  assert.equal(res.status, 200);
+  assert.equal(res.body.ok, true);
+});
 
-  it('blocks unauthenticated profile access', async () => {
-    const res = await request(app).get('/api/auth/me');
-    expect(res.status).to.equal(401);
-  });
+test('blocks unauthenticated profile access', async () => {
+  const res = await request(app).get('/api/auth/me');
+  assert.equal(res.status, 401);
+});
 
-  it('blocks unauthenticated protected order route', async () => {
-    const res = await request(app).get('/api/orders/mine');
-    expect(res.status).to.equal(401);
-  });
+test('blocks unauthenticated protected order route', async () => {
+  const res = await request(app).get('/api/orders/mine');
+  assert.equal(res.status, 401);
 });
