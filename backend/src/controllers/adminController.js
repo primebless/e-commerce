@@ -1,17 +1,30 @@
 import asyncHandler from 'express-async-handler';
 import { prisma } from '../config/prisma.js';
+import {
+  enqueueJob,
+  getAutomationKpis,
+  getQueueStats,
+  runAbandonedCartRecoveryJob,
+  runLowStockAlertsJob,
+  runWeeklyKpiDigestJob,
+} from '../automation/index.js';
 
 // Provides aggregate metrics for admin dashboard charts.
 export const getAdminAnalytics = asyncHandler(async (req, res) => {
-  const [usersCount, productsCount, ordersCount, revenueStats, statusStats, topProducts, lowStock] = await Promise.all([
-    prisma.user.count(),
-    prisma.product.count(),
-    prisma.order.count(),
-    prisma.order.aggregate({ _sum: { totalPrice: true } }),
-    prisma.order.groupBy({ by: ['status'], _count: { _all: true } }),
-    prisma.product.findMany({ orderBy: [{ rating: 'desc' }, { numReviews: 'desc' }], take: 5 }),
-    prisma.product.findMany({ where: { countInStock: { lte: 5 } }, orderBy: { countInStock: 'asc' }, take: 10 }),
-  ]);
+  const [usersCount, productsCount, ordersCount, revenueStats, statusStats, topProducts, lowStock] =
+    await Promise.all([
+      prisma.user.count(),
+      prisma.product.count(),
+      prisma.order.count(),
+      prisma.order.aggregate({ _sum: { totalPrice: true } }),
+      prisma.order.groupBy({ by: ['status'], _count: { _all: true } }),
+      prisma.product.findMany({ orderBy: [{ rating: 'desc' }, { numReviews: 'desc' }], take: 5 }),
+      prisma.product.findMany({
+        where: { countInStock: { lte: 5 } },
+        orderBy: { countInStock: 'asc' },
+        take: 10,
+      }),
+    ]);
 
   res.json({
     usersCount,
@@ -19,8 +32,16 @@ export const getAdminAnalytics = asyncHandler(async (req, res) => {
     ordersCount,
     revenue: revenueStats._sum.totalPrice || 0,
     orderStatusBreakdown: statusStats.map((row) => ({ _id: row.status, count: row._count._all })),
-    topProducts: topProducts.map((product) => ({ _id: product.id, name: product.name, rating: product.rating })),
-    lowStock: lowStock.map((product) => ({ _id: product.id, name: product.name, countInStock: product.countInStock })),
+    topProducts: topProducts.map((product) => ({
+      _id: product.id,
+      name: product.name,
+      rating: product.rating,
+    })),
+    lowStock: lowStock.map((product) => ({
+      _id: product.id,
+      name: product.name,
+      countInStock: product.countInStock,
+    })),
   });
 });
 
@@ -60,7 +81,8 @@ export const updateUser = asyncHandler(async (req, res) => {
       role: req.body.role ?? user.role,
       isSeller: req.body.isSeller ?? user.isSeller,
       sellerApproved: req.body.sellerApproved ?? user.sellerApproved,
-      sellerApprovalRequestedAt: req.body.sellerApprovalRequestedAt ?? user.sellerApprovalRequestedAt,
+      sellerApprovalRequestedAt:
+        req.body.sellerApprovalRequestedAt ?? user.sellerApprovalRequestedAt,
       sellerApprovedAt: req.body.sellerApprovedAt ?? user.sellerApprovedAt,
     },
   });
@@ -226,6 +248,51 @@ export const getActionReport = asyncHandler(async (req, res) => {
   });
 });
 
+const runJobDirectly = async (jobName) => {
+  if (jobName === 'abandoned-cart-recovery') return runAbandonedCartRecoveryJob();
+  if (jobName === 'low-stock-alerts') return runLowStockAlertsJob();
+  if (jobName === 'weekly-kpi-digest') return runWeeklyKpiDigestJob();
+  throw new Error('Unknown job name');
+};
+
+export const getAutomationSummary = asyncHandler(async (req, res) => {
+  const [kpis, queue] = await Promise.all([getAutomationKpis(), Promise.resolve(getQueueStats())]);
+  res.json({
+    kpis,
+    queue,
+    availableJobs: ['abandoned-cart-recovery', 'low-stock-alerts', 'weekly-kpi-digest'],
+  });
+});
+
+export const runAutomationJob = asyncHandler(async (req, res) => {
+  const jobName = String(req.body?.jobName || '').trim();
+  const mode = String(req.body?.mode || 'queue').toLowerCase();
+
+  if (!jobName) {
+    res.status(400);
+    throw new Error('jobName is required');
+  }
+
+  if (mode === 'direct') {
+    const result = await runJobDirectly(jobName);
+    res.json({
+      mode: 'direct',
+      jobName,
+      result,
+      queue: getQueueStats(),
+    });
+    return;
+  }
+
+  const queued = enqueueJob(jobName, { source: 'admin-api', requestedBy: req.user?.id || null });
+  res.status(202).json({
+    mode: 'queue',
+    jobName,
+    queued,
+    queue: getQueueStats(),
+  });
+});
+
 export const getCoupons = asyncHandler(async (req, res) => {
   const coupons = await prisma.coupon.findMany({ orderBy: { createdAt: 'desc' } });
   res.json(coupons);
@@ -234,7 +301,9 @@ export const getCoupons = asyncHandler(async (req, res) => {
 export const createCoupon = asyncHandler(async (req, res) => {
   const created = await prisma.coupon.create({
     data: {
-      code: String(req.body.code || '').trim().toUpperCase(),
+      code: String(req.body.code || '')
+        .trim()
+        .toUpperCase(),
       type: req.body.type,
       value: Number(req.body.value),
       minSubtotal: Number(req.body.minSubtotal || 0),
@@ -258,7 +327,8 @@ export const updateCoupon = asyncHandler(async (req, res) => {
       code: req.body.code ? String(req.body.code).trim().toUpperCase() : existing.code,
       type: req.body.type ?? existing.type,
       value: req.body.value !== undefined ? Number(req.body.value) : existing.value,
-      minSubtotal: req.body.minSubtotal !== undefined ? Number(req.body.minSubtotal) : existing.minSubtotal,
+      minSubtotal:
+        req.body.minSubtotal !== undefined ? Number(req.body.minSubtotal) : existing.minSubtotal,
       expiresAt: req.body.expiresAt ? new Date(req.body.expiresAt) : existing.expiresAt,
       isActive: req.body.isActive ?? existing.isActive,
     },

@@ -7,10 +7,12 @@ import {
   getActionLogs,
   getActionReport,
   getAdminAnalytics,
+  getAutomationSummary,
   getCoupons,
   getSupportTickets,
   getUsers,
   rejectSeller,
+  runAutomationJob,
   updateCoupon,
   updateSupportTicket,
   updateUser,
@@ -24,6 +26,8 @@ router.use(protect, adminOnly);
 router.get('/analytics', getAdminAnalytics);
 router.get('/logs', getActionLogs);
 router.get('/reports', getActionReport);
+router.get('/automation/summary', getAutomationSummary);
+router.post('/automation/run', runAutomationJob);
 router.get('/coupons', getCoupons);
 router.post('/coupons', createCoupon);
 router.put('/coupons/:id', updateCoupon);

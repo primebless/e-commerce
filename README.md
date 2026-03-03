@@ -138,3 +138,16 @@ npm install
 
 - Requirement requested MERN; implementation uses PostgreSQL by your instruction.
 - For full production payments, add Stripe webhook verification for payment finalization.
+
+## Automation (Phase 1)
+
+- In-process automation queue + scheduler starts with backend server startup.
+- Jobs implemented:
+  - `abandoned-cart-recovery`
+  - `low-stock-alerts`
+  - `weekly-kpi-digest`
+- Admin endpoints:
+  - `GET /api/admin/automation/summary`
+  - `POST /api/admin/automation/run` with `{ "jobName": "abandoned-cart-recovery", "mode": "queue" }`
+- Admin UI:
+  - `/admin/automation`

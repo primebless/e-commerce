@@ -1,5 +1,5 @@
 import { Box, MenuItem, Paper, Select, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import api from '../api/client';
 import { toast } from '../utils/toast';
 
@@ -7,19 +7,21 @@ const AdminSupportTicketsPage = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [tickets, setTickets] = useState([]);
 
-  const load = async (status = statusFilter) => {
-    const { data } = await api.get('/admin/support-tickets', { params: { status: status || undefined } });
+  const load = useCallback(async (status = '') => {
+    const { data } = await api.get('/admin/support-tickets', {
+      params: { status: status || undefined },
+    });
     setTickets(data || []);
-  };
+  }, []);
 
   useEffect(() => {
-    load();
-  }, []);
+    load(statusFilter);
+  }, [load, statusFilter]);
 
   const updateStatus = async (id, status) => {
     await api.put(`/admin/support-tickets/${id}`, { status });
     toast.success('Ticket updated');
-    load();
+    load(statusFilter);
   };
 
   return (
@@ -31,7 +33,6 @@ const AdminSupportTicketsPage = () => {
         value={statusFilter}
         onChange={(e) => {
           setStatusFilter(e.target.value);
-          load(e.target.value);
         }}
         sx={{ maxWidth: 240 }}
       >
@@ -45,9 +46,13 @@ const AdminSupportTicketsPage = () => {
       {tickets.map((ticket) => (
         <Paper key={ticket.id} sx={{ p: 2 }}>
           <Typography variant="subtitle2">{ticket.subject}</Typography>
-          <Typography variant="body2">From: {ticket.name} ({ticket.email})</Typography>
+          <Typography variant="body2">
+            From: {ticket.name} ({ticket.email})
+          </Typography>
           <Typography variant="body2">Order: {ticket.orderId || '-'}</Typography>
-          <Typography variant="body2" sx={{ my: 1 }}>{ticket.message}</Typography>
+          <Typography variant="body2" sx={{ my: 1 }}>
+            {ticket.message}
+          </Typography>
           <Select
             size="small"
             value={ticket.status}

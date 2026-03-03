@@ -1,4 +1,20 @@
-import { AppBar, Badge, Box, Button, Container, Divider, Drawer, IconButton, InputBase, List, ListItemButton, ListItemText, Toolbar, Tooltip, Typography } from '@mui/material';
+import {
+  AppBar,
+  Badge,
+  Box,
+  Button,
+  Container,
+  Divider,
+  Drawer,
+  IconButton,
+  InputBase,
+  List,
+  ListItemButton,
+  ListItemText,
+  Toolbar,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import {
   ShoppingCart,
   Brightness4,
@@ -62,7 +78,9 @@ const Layout = ({ children, mode, toggleTheme }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user } = useSelector((state) => state.auth);
   const firstName = user?.name ? String(user.name).trim().split(/\s+/)[0] : '';
-  const cartItemsCount = useSelector((state) => state.cart.items.reduce((acc, item) => acc + item.quantity, 0));
+  const cartItemsCount = useSelector((state) =>
+    state.cart.items.reduce((acc, item) => acc + item.quantity, 0)
+  );
 
   const onSearch = (event) => {
     event.preventDefault();
@@ -99,7 +117,9 @@ const Layout = ({ children, mode, toggleTheme }) => {
     const loadCategories = async () => {
       try {
         const { data } = await api.get('/products', { params: { page: 1, limit: 120 } });
-        const categories = [...new Set((data?.products || []).map((item) => item.category).filter(Boolean))];
+        const categories = [
+          ...new Set((data?.products || []).map((item) => item.category).filter(Boolean)),
+        ];
         setBrowseCategories(categories.slice(0, 14));
       } catch {
         setBrowseCategories([]);
@@ -114,14 +134,14 @@ const Layout = ({ children, mode, toggleTheme }) => {
   );
   const categoryList = browseCategories.length ? browseCategories : fallbackCategories;
   const showNavbarSearch = location.pathname === '/';
-  const showQuickChat = user?.role !== 'admin' && (
-    location.pathname === '/' ||
-    location.pathname === '/products' ||
-    location.pathname.startsWith('/product/') ||
-    location.pathname === '/cart' ||
-    location.pathname === '/checkout' ||
-    location.pathname.startsWith('/order/')
-  );
+  const showQuickChat =
+    user?.role !== 'admin' &&
+    (location.pathname === '/' ||
+      location.pathname === '/products' ||
+      location.pathname.startsWith('/product/') ||
+      location.pathname === '/cart' ||
+      location.pathname === '/checkout' ||
+      location.pathname.startsWith('/order/'));
   const buildBotReply = (message) => {
     const text = message.toLowerCase();
     if (text.includes('product') || text.includes('shop') || text.includes('browse')) {
@@ -130,13 +150,24 @@ const Layout = ({ children, mode, toggleTheme }) => {
     if (text.includes('categor') || text.includes('department')) {
       return `Top categories include ${categoryList.slice(0, 6).join(', ')}. Open the menu icon to browse categories quickly or visit /products.`;
     }
-    if (text.includes('offer') || text.includes('deal') || text.includes('discount') || text.includes('coupon') || text.includes('promo')) {
+    if (
+      text.includes('offer') ||
+      text.includes('deal') ||
+      text.includes('discount') ||
+      text.includes('coupon') ||
+      text.includes('promo')
+    ) {
       return 'Active offers appear on the home banners and product cards. Check Home and Shop pages regularly for discounted items and promo campaigns.';
     }
     if (text.includes('company') || text.includes('about') || text.includes('prime')) {
       return 'PRIME is a modern multi-vendor marketplace focused on trusted products, secure checkout, and fast delivery. You can read more on the About page.';
     }
-    if (text.includes('contact') || text.includes('email') || text.includes('phone') || text.includes('reach')) {
+    if (
+      text.includes('contact') ||
+      text.includes('email') ||
+      text.includes('phone') ||
+      text.includes('reach')
+    ) {
       return 'Use the Contact page for direct details, or open Support Center and submit a ticket. Include your Order ID for faster help.';
     }
     if (text.includes('order') || text.includes('track') || text.includes('status')) {
@@ -145,7 +176,12 @@ const Layout = ({ children, mode, toggleTheme }) => {
     if (text.includes('delivery') || text.includes('shipping')) {
       return 'Delivery fee and timing are shown at checkout. Choose your address, then you will see the estimated delivery total.';
     }
-    if (text.includes('mpesa') || text.includes('m-pesa') || text.includes('stk') || text.includes('payment')) {
+    if (
+      text.includes('mpesa') ||
+      text.includes('m-pesa') ||
+      text.includes('stk') ||
+      text.includes('payment')
+    ) {
       return 'For M-Pesa STK, confirm the prompt on your phone. If it fails, verify your phone number format and try again.';
     }
     if (text.includes('refund') || text.includes('return')) {
@@ -160,7 +196,12 @@ const Layout = ({ children, mode, toggleTheme }) => {
     if (text.includes('wishlist') || text.includes('favorite')) {
       return 'Save items using Wishlist, then open the wishlist icon in the top navbar to review and buy later.';
     }
-    if (text.includes('account') || text.includes('profile') || text.includes('login') || text.includes('signup')) {
+    if (
+      text.includes('account') ||
+      text.includes('profile') ||
+      text.includes('login') ||
+      text.includes('signup')
+    ) {
       return 'Use Profile to manage your details, addresses, and orders. If you are new, create an account from Signup in the top navbar.';
     }
     if (text.includes('privacy') || text.includes('terms') || text.includes('refund policy')) {
@@ -201,12 +242,20 @@ const Layout = ({ children, mode, toggleTheme }) => {
         <Toolbar sx={{ gap: 1, flexDirection: 'column', alignItems: 'stretch', py: 0.75 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, md: 1 }, minWidth: 0 }}>
             {user?.role !== 'admin' && (
-              <IconButton color="inherit" onClick={() => setUserMenuOpen(true)} aria-label="Open browse menu">
+              <IconButton
+                color="inherit"
+                onClick={() => setUserMenuOpen(true)}
+                aria-label="Open browse menu"
+              >
                 <MenuIcon />
               </IconButton>
             )}
             {user?.role === 'admin' && (
-              <IconButton color="inherit" onClick={() => setAdminMenuOpen(true)} aria-label="Open admin menu">
+              <IconButton
+                color="inherit"
+                onClick={() => setAdminMenuOpen(true)}
+                aria-label="Open admin menu"
+              >
                 <MenuIcon />
               </IconButton>
             )}
@@ -224,7 +273,12 @@ const Layout = ({ children, mode, toggleTheme }) => {
                 mr: { xs: 'auto', md: 0 },
               }}
             >
-              <Box component="img" src="/prime-logo.svg" alt="Prime logo" sx={{ height: { xs: 22, md: 26 }, width: 'auto' }} />
+              <Box
+                component="img"
+                src="/prime-logo.svg"
+                alt="Prime logo"
+                sx={{ height: { xs: 22, md: 26 }, width: 'auto' }}
+              />
               <Typography
                 variant="h6"
                 sx={{
@@ -245,13 +299,27 @@ const Layout = ({ children, mode, toggleTheme }) => {
                     Back
                   </Button>
                 )}
-                <Button component={Link} to="/">Home</Button>
-                <Button component={Link} to="/products">Shop</Button>
-                <Button component={Link} to="/support">Support</Button>
+                <Button component={Link} to="/">
+                  Home
+                </Button>
+                <Button component={Link} to="/products">
+                  Shop
+                </Button>
+                <Button component={Link} to="/support">
+                  Support
+                </Button>
               </>
             )}
 
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.2, md: 0.4 }, ml: { xs: 0, md: 'auto' }, flexShrink: 0 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: { xs: 0.2, md: 0.4 },
+                ml: { xs: 0, md: 'auto' },
+                flexShrink: 0,
+              }}
+            >
               {isMobile && location.pathname !== '/' && (
                 <Tooltip title="Back">
                   <IconButton color="inherit" onClick={() => navigate(-1)} aria-label="Back">
@@ -285,23 +353,45 @@ const Layout = ({ children, mode, toggleTheme }) => {
 
             {!isMobile && user ? (
               <>
-                <Button component={Link} to="/profile">{firstName || user.name}</Button>
-                {user.role !== 'admin' && <Button component={Link} to="/seller">Sell</Button>}
-                <Button color="error" onClick={onLogout}>Logout</Button>
+                <Button component={Link} to="/profile">
+                  {firstName || user.name}
+                </Button>
+                {user.role !== 'admin' && (
+                  <Button component={Link} to="/seller">
+                    Sell
+                  </Button>
+                )}
+                <Button color="error" onClick={onLogout}>
+                  Logout
+                </Button>
               </>
             ) : null}
 
             {!isMobile && !user ? (
               <>
-                <Button component={Link} to="/login">Login</Button>
-                <Button variant="contained" component={Link} to="/signup">Signup</Button>
+                <Button component={Link} to="/login">
+                  Login
+                </Button>
+                <Button variant="contained" component={Link} to="/signup">
+                  Signup
+                </Button>
               </>
             ) : null}
           </Box>
 
           {showNavbarSearch && (
             <Box sx={{ width: '100%', position: 'relative' }}>
-              <Box component="form" onSubmit={onSearch} sx={{ px: 1.5, py: 0.35, border: '1px solid', borderColor: 'divider', borderRadius: 999 }}>
+              <Box
+                component="form"
+                onSubmit={onSearch}
+                sx={{
+                  px: 1.5,
+                  py: 0.35,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 999,
+                }}
+              >
                 <InputBase
                   fullWidth
                   placeholder="Search products..."
@@ -346,8 +436,12 @@ const Layout = ({ children, mode, toggleTheme }) => {
                         '&:hover': { bgcolor: 'action.hover' },
                       }}
                     >
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>{item.name}</Typography>
-                      <Typography variant="caption" color="text.secondary">{formatKES(item.price)}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {item.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {formatKES(item.price)}
+                      </Typography>
                     </Box>
                   ))}
                 </Box>
@@ -365,8 +459,12 @@ const Layout = ({ children, mode, toggleTheme }) => {
           PaperProps={{ sx: { width: 290 } }}
         >
           <Box sx={{ p: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 800, color: '#0d9488' }}>PRIME</Typography>
-            <Typography variant="caption" color="text.secondary">Admin Navigation</Typography>
+            <Typography variant="h6" sx={{ fontWeight: 800, color: '#0d9488' }}>
+              PRIME
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Admin Navigation
+            </Typography>
           </Box>
           <Divider />
           <List sx={{ py: 0.5 }}>
@@ -375,6 +473,7 @@ const Layout = ({ children, mode, toggleTheme }) => {
               { label: 'User Management', path: '/admin' },
               { label: 'Seller Dashboard', path: '/admin/seller-dashboard' },
               { label: 'Reports', path: '/admin/reports' },
+              { label: 'Automation', path: '/admin/automation' },
               { label: 'Logs', path: '/admin/logs' },
               { label: 'Coupons', path: '/admin/coupons' },
               { label: 'Tickets', path: '/admin/support-tickets' },
@@ -408,9 +507,18 @@ const Layout = ({ children, mode, toggleTheme }) => {
           onClose={() => setUserMenuOpen(false)}
           PaperProps={{ sx: { width: 300 } }}
         >
-          <Box sx={{ p: 2, background: 'linear-gradient(120deg, rgba(13,148,136,0.15), rgba(13,148,136,0.03))' }}>
-            <Typography variant="h6" sx={{ fontWeight: 800, color: '#0d9488' }}>PRIME</Typography>
-            <Typography variant="caption" color="text.secondary">Browse Categories</Typography>
+          <Box
+            sx={{
+              p: 2,
+              background: 'linear-gradient(120deg, rgba(13,148,136,0.15), rgba(13,148,136,0.03))',
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 800, color: '#0d9488' }}>
+              PRIME
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Browse Categories
+            </Typography>
           </Box>
           <Divider />
           <List sx={{ py: 0.5 }}>
@@ -435,11 +543,19 @@ const Layout = ({ children, mode, toggleTheme }) => {
             <Divider sx={{ my: 0.5 }} />
             {user && (
               <>
-                <ListItemButton component={Link} to="/profile" onClick={() => setUserMenuOpen(false)}>
+                <ListItemButton
+                  component={Link}
+                  to="/profile"
+                  onClick={() => setUserMenuOpen(false)}
+                >
                   <ListItemText primary="My Profile" />
                 </ListItemButton>
                 {user.role !== 'admin' && (
-                  <ListItemButton component={Link} to="/seller" onClick={() => setUserMenuOpen(false)}>
+                  <ListItemButton
+                    component={Link}
+                    to="/seller"
+                    onClick={() => setUserMenuOpen(false)}
+                  >
                     <ListItemText primary="Sell" />
                   </ListItemButton>
                 )}
@@ -450,7 +566,11 @@ const Layout = ({ children, mode, toggleTheme }) => {
                 <ListItemButton component={Link} to="/login" onClick={() => setUserMenuOpen(false)}>
                   <ListItemText primary="Login" />
                 </ListItemButton>
-                <ListItemButton component={Link} to="/signup" onClick={() => setUserMenuOpen(false)}>
+                <ListItemButton
+                  component={Link}
+                  to="/signup"
+                  onClick={() => setUserMenuOpen(false)}
+                >
                   <ListItemText primary="Signup" />
                 </ListItemButton>
               </>
@@ -502,8 +622,19 @@ const Layout = ({ children, mode, toggleTheme }) => {
                 overflow: 'hidden',
               }}
             >
-              <Box sx={{ px: 1.5, py: 1.1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'rgba(13,148,136,0.08)' }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>PRIME Assistant</Typography>
+              <Box
+                sx={{
+                  px: 1.5,
+                  py: 1.1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  bgcolor: 'rgba(13,148,136,0.08)',
+                }}
+              >
+                <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                  PRIME Assistant
+                </Typography>
                 <IconButton size="small" onClick={() => setChatOpen(false)} aria-label="Close chat">
                   <Close fontSize="small" />
                 </IconButton>
@@ -526,7 +657,13 @@ const Layout = ({ children, mode, toggleTheme }) => {
                           key={prompt}
                           size="small"
                           variant="outlined"
-                          sx={{ borderRadius: 999, textTransform: 'none', fontSize: 12, px: 1.1, py: 0.25 }}
+                          sx={{
+                            borderRadius: 999,
+                            textTransform: 'none',
+                            fontSize: 12,
+                            px: 1.1,
+                            py: 0.25,
+                          }}
                           onClick={() => sendChatMessage(prompt)}
                           disabled={botTyping}
                         >
@@ -577,14 +714,33 @@ const Layout = ({ children, mode, toggleTheme }) => {
                   ))}
                   {botTyping && (
                     <Box sx={{ mb: 1, display: 'flex', justifyContent: 'flex-start' }}>
-                      <Box sx={{ px: 1.2, py: 0.8, borderRadius: 1.8, fontSize: 13, border: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}>
+                      <Box
+                        sx={{
+                          px: 1.2,
+                          py: 0.8,
+                          borderRadius: 1.8,
+                          fontSize: 13,
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          bgcolor: 'background.paper',
+                        }}
+                      >
                         PRIME Assistant is typing...
                       </Box>
                     </Box>
                   )}
                   <Box ref={chatEndRef} />
                 </Box>
-                <Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, px: 1, py: 0.8, mb: 1 }}>
+                <Box
+                  sx={{
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 2,
+                    px: 1,
+                    py: 0.8,
+                    mb: 1,
+                  }}
+                >
                   <InputBase
                     fullWidth
                     placeholder="Type your question..."
@@ -598,8 +754,15 @@ const Layout = ({ children, mode, toggleTheme }) => {
                     }}
                   />
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Button size="small" component={Link} to="/support" onClick={() => setChatOpen(false)}>
+                <Box
+                  sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <Button
+                    size="small"
+                    component={Link}
+                    to="/support"
+                    onClick={() => setChatOpen(false)}
+                  >
                     Open Support Center
                   </Button>
                   <Button
@@ -633,14 +796,29 @@ const Layout = ({ children, mode, toggleTheme }) => {
         </Box>
       )}
 
-      <Box component="footer" sx={{ py: 2, textAlign: 'center', borderTop: '1px solid', borderColor: 'divider' }}>
+      <Box
+        component="footer"
+        sx={{ py: 2, textAlign: 'center', borderTop: '1px solid', borderColor: 'divider' }}
+      >
         <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 1.5, mb: 1 }}>
-          <Button size="small" component={Link} to="/privacy">Privacy</Button>
-          <Button size="small" component={Link} to="/terms">Terms</Button>
-          <Button size="small" component={Link} to="/refund-policy">Refund Policy</Button>
-          <Button size="small" component={Link} to="/contact">Contact</Button>
-          <Button size="small" component={Link} to="/about">About</Button>
-          <Button size="small" component={Link} to="/support">Support Center</Button>
+          <Button size="small" component={Link} to="/privacy">
+            Privacy
+          </Button>
+          <Button size="small" component={Link} to="/terms">
+            Terms
+          </Button>
+          <Button size="small" component={Link} to="/refund-policy">
+            Refund Policy
+          </Button>
+          <Button size="small" component={Link} to="/contact">
+            Contact
+          </Button>
+          <Button size="small" component={Link} to="/about">
+            About
+          </Button>
+          <Button size="small" component={Link} to="/support">
+            Support Center
+          </Button>
         </Box>
         <Typography variant="body2">© {new Date().getFullYear()} Prime Store</Typography>
       </Box>

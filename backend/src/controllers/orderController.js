@@ -6,7 +6,9 @@ import { logAction } from '../utils/logAction.js';
 const PLATFORM_COMMISSION_RATE = 0.1;
 
 const normalizeKenyaPhone = (value) => {
-  const raw = String(value || '').trim().replace(/\s+/g, '');
+  const raw = String(value || '')
+    .trim()
+    .replace(/\s+/g, '');
   const digits = raw.replace(/[^\d+]/g, '');
   const noPlus = digits.startsWith('+') ? digits.slice(1) : digits;
 
@@ -37,8 +39,14 @@ const mapOrderItem = (item) => ({
   quantity: item.quantity,
   sellerName: item.sellerName,
   grossAmount: Number((Number(item.price || 0) * Number(item.quantity || 0)).toFixed(2)),
-  platformCommission: Number((Number(item.price || 0) * Number(item.quantity || 0) * PLATFORM_COMMISSION_RATE).toFixed(2)),
-  sellerEarning: Number((Number(item.price || 0) * Number(item.quantity || 0) * (1 - PLATFORM_COMMISSION_RATE)).toFixed(2)),
+  platformCommission: Number(
+    (Number(item.price || 0) * Number(item.quantity || 0) * PLATFORM_COMMISSION_RATE).toFixed(2)
+  ),
+  sellerEarning: Number(
+    (Number(item.price || 0) * Number(item.quantity || 0) * (1 - PLATFORM_COMMISSION_RATE)).toFixed(
+      2
+    )
+  ),
 });
 
 const mapOrder = (order) => ({
@@ -75,7 +83,16 @@ const mapOrder = (order) => ({
 
 // Creates order for guest or registered user and decrements stock safely.
 export const createOrder = asyncHandler(async (req, res) => {
-  const { orderItems, shippingAddress, paymentMethod, itemsPrice, taxPrice, shippingPrice, totalPrice, guestEmail } = req.body;
+  const {
+    orderItems,
+    shippingAddress,
+    paymentMethod,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+    guestEmail,
+  } = req.body;
 
   if (!orderItems?.length) {
     res.status(400);
@@ -128,9 +145,6 @@ export const createOrder = asyncHandler(async (req, res) => {
         orderItems: {
           create: preparedItems.map((row) => {
             const unitPrice = Number(row.item.price || row.product.price);
-            const grossAmount = Number((unitPrice * row.qty).toFixed(2));
-            const platformCommission = Number((grossAmount * PLATFORM_COMMISSION_RATE).toFixed(2));
-            const sellerEarning = Number((grossAmount - platformCommission).toFixed(2));
 
             return {
               productId: row.product.id,
@@ -300,7 +314,8 @@ export const createIntaSendCheckout = asyncHandler(async (req, res) => {
     res.json({
       provider: 'intasend',
       configured: false,
-      message: 'IntaSend keys are missing. Add INTASEND_PUBLIC_KEY and INTASEND_SECRET_KEY in backend .env.',
+      message:
+        'IntaSend keys are missing. Add INTASEND_PUBLIC_KEY and INTASEND_SECRET_KEY in backend .env.',
       amount: Number(amount),
       orderId: orderId || null,
     });
@@ -329,7 +344,9 @@ export const createIntaSendStkPush = asyncHandler(async (req, res) => {
   const { amount, phone, email, fullName, currency = 'KES', apiRef } = req.body || {};
   const publicKey = process.env.INTASEND_PUBLIC_KEY || '';
   const secretKey = process.env.INTASEND_SECRET_KEY || '';
-  const stkPushUrl = process.env.INTASEND_STK_PUSH_URL || 'https://sandbox.intasend.com/api/v1/payment/mpesa-stk-push/';
+  const stkPushUrl =
+    process.env.INTASEND_STK_PUSH_URL ||
+    'https://sandbox.intasend.com/api/v1/payment/mpesa-stk-push/';
   const businessName = process.env.INTASEND_BUSINESS_NAME || 'Prime Store';
   const safeBusinessRef = businessName.replace(/[^a-zA-Z0-9]/g, '').toUpperCase() || 'PRIMESTORE';
 
@@ -352,7 +369,8 @@ export const createIntaSendStkPush = asyncHandler(async (req, res) => {
       provider: 'intasend',
       channel: 'mpesa',
       configured: false,
-      message: 'IntaSend keys are missing. Add INTASEND_PUBLIC_KEY and INTASEND_SECRET_KEY in backend .env.',
+      message:
+        'IntaSend keys are missing. Add INTASEND_PUBLIC_KEY and INTASEND_SECRET_KEY in backend .env.',
     });
     return;
   }
@@ -405,7 +423,8 @@ export const createIntaSendStkPush = asyncHandler(async (req, res) => {
 export const getIntaSendStkStatus = asyncHandler(async (req, res) => {
   const invoiceId = req.params.invoiceId || req.query.invoiceId;
   const secretKey = process.env.INTASEND_SECRET_KEY || '';
-  const statusUrlBase = process.env.INTASEND_STK_STATUS_URL || 'https://sandbox.intasend.com/api/v1/payment/status/';
+  const statusUrlBase =
+    process.env.INTASEND_STK_STATUS_URL || 'https://sandbox.intasend.com/api/v1/payment/status/';
 
   if (!invoiceId) {
     res.status(400);

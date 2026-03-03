@@ -23,6 +23,7 @@ import AdminReportsPage from './pages/AdminReportsPage';
 import AdminCouponsPage from './pages/AdminCouponsPage';
 import AdminSupportTicketsPage from './pages/AdminSupportTicketsPage';
 import AdminSellerRequestsPage from './pages/AdminSellerRequestsPage';
+import AdminAutomationPage from './pages/AdminAutomationPage';
 import LoginRequiredModal from './components/LoginRequiredModal';
 import { mergeLocalCartToServer } from './features/cartSlice';
 import PrivacyPage from './pages/PrivacyPage';
@@ -63,17 +64,88 @@ const App = () => {
 
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/order-confirmation/:id" element={<OrderConfirmationPage />} />
-            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="/wishlist" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wishlist"
+              element={
+                <ProtectedRoute>
+                  <WishlistPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/support" element={<SupportCenterPage />} />
-            <Route path="/seller" element={<ProtectedRoute><SellerDashboardPage /></ProtectedRoute>} />
+            <Route
+              path="/seller"
+              element={
+                <ProtectedRoute>
+                  <SellerDashboardPage />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
-            <Route path="/admin/logs" element={<AdminRoute><AdminLogsPage /></AdminRoute>} />
-            <Route path="/admin/reports" element={<AdminRoute><AdminReportsPage /></AdminRoute>} />
-            <Route path="/admin/coupons" element={<AdminRoute><AdminCouponsPage /></AdminRoute>} />
-            <Route path="/admin/support-tickets" element={<AdminRoute><AdminSupportTicketsPage /></AdminRoute>} />
-            <Route path="/admin/seller-dashboard" element={<AdminRoute><AdminSellerRequestsPage /></AdminRoute>} />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboardPage />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/logs"
+              element={
+                <AdminRoute>
+                  <AdminLogsPage />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/reports"
+              element={
+                <AdminRoute>
+                  <AdminReportsPage />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/automation"
+              element={
+                <AdminRoute>
+                  <AdminAutomationPage />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/coupons"
+              element={
+                <AdminRoute>
+                  <AdminCouponsPage />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/support-tickets"
+              element={
+                <AdminRoute>
+                  <AdminSupportTicketsPage />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/seller-dashboard"
+              element={
+                <AdminRoute>
+                  <AdminSellerRequestsPage />
+                </AdminRoute>
+              }
+            />
 
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
