@@ -1,0 +1,29 @@
+module.exports = {
+  root: true,
+  env: {
+    es2022: true,
+    node: true,
+    browser: true,
+    jest: true,
+  },
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
+  settings: {
+    react: {
+      version: '18.0',
+    },
+  },
+  plugins: ['react', 'react-hooks'],
+  extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:react-hooks/recommended'],
+  ignorePatterns: ['**/node_modules/**', '**/dist/**', '*.config.cjs'],
+  rules: {
+    'react/react-in-jsx-scope': 'off',
+    'react/prop-types': 'off',
+    'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+  },
+};

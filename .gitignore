@@ -10,3 +10,4 @@ coverage/
 **/coverage/
 .idea/
 .vscode/
+.husky/_/

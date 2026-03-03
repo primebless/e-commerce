@@ -8,6 +8,12 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci_db?schema=public
+      JWT_SECRET: ci-test-secret
+      JWT_EXPIRES_IN: 7d
+      CLIENT_URL: http://localhost:5173
     defaults:
       run:
         working-directory: backend

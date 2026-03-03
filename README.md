@@ -7,7 +7,7 @@ Production-style e-commerce platform implementing your requested architecture, a
 - Public storefront: home, listing, product details, search/filter/sort, guest cart, live cart count.
 - Guest checkout: no login required, collects full name/email/phone/address/payment method, stores order with `isGuest: true` and email reference.
 - Authenticated checkout: links order to `userId` with `isGuest: false`.
-- JWT auth with httpOnly cookie sessions.
+- JWT auth with Bearer token sent in `Authorization` header.
 - Password hashing with bcrypt.
 - Role-based admin routes (`user`, `admin`).
 - Guest cart in localStorage, user cart in DB (`Cart`, `CartItem`) with merge on login.
@@ -15,7 +15,7 @@ Production-style e-commerce platform implementing your requested architecture, a
 - Order status workflow: pending, paid, shipped, delivered, cancelled.
 - Stock validation + stock decrement on purchase.
 - Action logs and admin reports/log pages.
-- Security middleware: Helmet, CORS (credentials), rate limiting, Joi validation.
+- Security middleware currently enabled: CORS and centralized error handling.
 - Stripe payment intent endpoint.
 - Backend tests for health, auth middleware behavior, protected routes.
 
@@ -107,6 +107,25 @@ npm run dev
 cd backend
 npm test
 ```
+
+```bash
+cd frontend
+npm test -- --watch=false
+```
+
+## Code Quality Automation
+
+```bash
+cd mern-ecommerce
+npm install
+```
+
+- Pre-commit hook runs `lint-staged` (ESLint + Prettier on staged files).
+- Manual checks:
+  - `npm run lint`
+  - `npm run lint:fix`
+  - `npm run format:check`
+  - `npm run format`
 
 ## Deployment
 
